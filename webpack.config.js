@@ -78,7 +78,7 @@ module.exports = {
                 removeStyleLinkTypeAttributes: true
             }
         }),
-        new FaviconsWebpackPlugin('./app/images/senthanal_sirpi_manohar.png'),
+        new FaviconsWebpackPlugin('./app/images/large-cluster.png'),
         new ngAnnotatePlugin({
             add: true
         }),
