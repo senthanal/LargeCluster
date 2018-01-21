@@ -1,8 +1,6 @@
 import _get from 'lodash/get';
 import _forEach from 'lodash/foreach';
 import proj from 'ol/proj';
-import Feature from 'ol/feature';
-import Point from 'ol/geom/point';
 import Style from 'ol/style/style';
 import Circle from 'ol/style/circle';
 import RegularShape from 'ol/style/regularshape';
@@ -12,7 +10,8 @@ import Text from 'ol/style/text';
 import LayerVector from 'ol/layer/vector';
 import SourceVector from 'ol/source/vector';
 import GeoJSON from 'ol/format/GeoJSON';
-import supercluster from 'supercluster';
+import SuperClusterService from './SuperClusterService';
+
 import clustersKmeans from '@turf/clusters-kmeans';
 import clustersDbscan from '@turf/clusters-dbscan';
 
@@ -56,7 +55,7 @@ export default class PointsClusterController {
                 return style;
             }
         });
-        this.clusterIndex = supercluster({
+        this.superClusterService = new SuperClusterService({
             log: false,
             radius: 40,
             extent: 256,
@@ -75,7 +74,7 @@ export default class PointsClusterController {
 
     $onChanges(changes){
         if(changes.points && this.isInitialized){
-            this.clusterIndex.load(this.points.features);
+            this.superClusterService.loadPoints(this.points.features);
             this.executeCluster();
         }
     }
@@ -98,24 +97,8 @@ export default class PointsClusterController {
         //return clustersKmeans(this.points, {numberOfClusters: 7});
         let bbox = proj.transformExtent(this.map.getView().calculateExtent(), 'EPSG:3857', 'EPSG:4326');
         let zoom = this.map.getView().getZoom();
-        let clusterArray = this.clusterIndex.getClusters(bbox, zoom);
-        return this.superclusterFeatures(clusterArray);
-    }
-
-    superclusterFeatures(clusterArray){
-        let features = [];
-        for (var i = 0; i < clusterArray.length; ++i) {
-            var feature = new Feature(new Point(
-                proj.fromLonLat(
-                    clusterArray[i].geometry.coordinates.map((numfloat)=> {
-                        return parseFloat(numfloat);
-                    })
-                )
-            ));
-            feature.setProperties(clusterArray[i]['properties']);
-            features.push(feature);
-        }
-        return features;
+        let clusterArray = this.superClusterService.getClustersArray(bbox, zoom);
+        return this.superClusterService.superclusterArrayToOlFeatures(clusterArray);
     }
 
     getStyle(radius) {
