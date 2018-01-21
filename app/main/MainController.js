@@ -6,7 +6,8 @@ export default class MainController{
         this.map = null;
         this.isInitialized = false;
         this.points = null;
-        this.pointsCount = 10000;
+        this.useWebWorker = false;
+        this.pointsCount = 1000;
         this.clusterOptions = {
             name: "Stores",
             shape: "circle",

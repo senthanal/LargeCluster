@@ -59,9 +59,6 @@ export default class PointsClusterController {
             }
         });
         this.isLoad = true;
-        this.useWebWorker = true;
-        this.superClusterWorker = new SuperClusterWorker();
-        this.superClusterWorker.addEventListener("message", this.onSuperClusterWorkerMessage.bind(this), this);
     }
 
     $onDestroy() {}
@@ -74,7 +71,15 @@ export default class PointsClusterController {
     }
 
     $onChanges(changes) {
-        if (changes.points && this.isInitialized) {
+        if(changes.useWebWorker && this.isInitialized){
+            if (this.useWebWorker) {
+                this.initWebWorker();
+            }
+            else{
+                this.resetWebWorker();
+            }
+        }
+        if ((changes.points || changes.useWebWorker) && this.isInitialized) {
             this.isLoad = true;
             this.executeCluster();
         }
@@ -83,6 +88,18 @@ export default class PointsClusterController {
     init() {
         this.map.addLayer(this.layer);
         this.map.on('moveend', this.executeCluster, this);
+    }
+
+    initWebWorker(){
+        this.superClusterWorker = new SuperClusterWorker();
+        this.superClusterWorker.addEventListener("message", this.onSuperClusterWorkerMessage.bind(this), this);
+    }
+
+    resetWebWorker(){
+        if(this.superClusterWorker){
+            this.superClusterWorker.removeEventListener("message", this.onSuperClusterWorkerMessage.bind(this), this);
+            this.superClusterWorker = null;
+        }
     }
 
     executeCluster() {
@@ -148,75 +165,5 @@ export default class PointsClusterController {
 
     onSuperClusterWorkerMessage(event) {
         this.showClusterOnMap(SuperClusterService.superclusterArrayToOlFeatures(Feature, Point, proj, event.data.clusterArray));
-    }
-
-    getStyle(radius) {
-        let stroke = new Stroke({
-            color: this.options.strokeColor || 'black',
-            width: this.options.strokeWidth || 2
-        });
-        let fill = new Fill({
-            color: this.options.fillColor || 'red'
-        });
-        let styles = {
-            'circle': new Style({
-                image: new Circle({
-                    fill: fill,
-                    radius: radius || this.options.shapeRadius || 10,
-                    stroke: stroke
-                })
-            }),
-            'square': new Style({
-                image: new RegularShape({
-                    fill: fill,
-                    stroke: stroke,
-                    points: 4,
-                    radius: radius || this.options.shapeRadius || 10,
-                    angle: Math.PI / 4
-                })
-            }),
-            'triangle': new Style({
-                image: new RegularShape({
-                    fill: fill,
-                    stroke: stroke,
-                    points: 3,
-                    radius: radius || this.options.shapeRadius || 10,
-                    rotation: Math.PI / 4,
-                    angle: 0
-                })
-            }),
-            'star': new Style({
-                image: new RegularShape({
-                    fill: fill,
-                    stroke: stroke,
-                    points: 5,
-                    radius: radius || this.options.shapeRadius || 10,
-                    radius2: 4,
-                    angle: 0
-                })
-            }),
-            'cross': new Style({
-                image: new RegularShape({
-                    fill: fill,
-                    stroke: stroke,
-                    points: 4,
-                    radius: radius || this.options.shapeRadius || 10,
-                    radius2: 0,
-                    angle: 0
-                })
-            }),
-            'x': new Style({
-                image: new RegularShape({
-                    fill: fill,
-                    stroke: stroke,
-                    points: 4,
-                    radius: radius || this.options.shapeRadius || 10,
-                    radius2: 0,
-                    angle: Math.PI / 4
-                })
-            })
-        };
-
-        return _get(styles, this.options.shape, "");
     }
 }

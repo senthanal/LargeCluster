@@ -8,6 +8,7 @@ clusterSettings.component('clusterSettings', {
     controller: ClusterSettingsController,
     bindings: {
         clusterPointsCount: '<',
+        useWebWorker: '=',
         onClusterPointsCountChanged: '&'
     }
 });

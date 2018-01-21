@@ -8,6 +8,7 @@ pointLayer.component('pointsCluster', {
     bindings: {
         map: '<',
         options: '<',
-        points: '<'
+        points: '<',
+        useWebWorker: '<'
     }
 });
