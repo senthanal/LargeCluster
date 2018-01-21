@@ -1,7 +1,4 @@
 import supercluster from 'supercluster';
-import Feature from 'ol/feature';
-import Point from 'ol/geom/point';
-import proj from 'ol/proj';
 
 export default class SuperClusterService{
     constructor(options){
@@ -16,7 +13,7 @@ export default class SuperClusterService{
         return this.clusterIndex.getClusters(bbox, zoom);
     }
 
-    superclusterArrayToOlFeatures(clusterArray){
+    static superclusterArrayToOlFeatures(Feature, Point, proj, clusterArray){
         let features = [];
         for (var i = 0; i < clusterArray.length; ++i) {
             var feature = new Feature(new Point(

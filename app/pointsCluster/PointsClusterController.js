@@ -1,5 +1,7 @@
 import _get from 'lodash/get';
 import _forEach from 'lodash/foreach';
+import Feature from 'ol/feature';
+import Point from 'ol/geom/point';
 import proj from 'ol/proj';
 import Style from 'ol/style/style';
 import Circle from 'ol/style/circle';
@@ -11,6 +13,7 @@ import LayerVector from 'ol/layer/vector';
 import SourceVector from 'ol/source/vector';
 import GeoJSON from 'ol/format/GeoJSON';
 import SuperClusterService from './SuperClusterService';
+import SuperClusterWorker from 'worker-loader!./SuperClusterWorker';
 
 let gj = new GeoJSON();
 export default class PointsClusterController {
@@ -20,7 +23,10 @@ export default class PointsClusterController {
         this.layer = new LayerVector({
             name: this.options.name,
             source: new SourceVector({
-                format: new GeoJSON({ dataProjection: 'EPSG::4326', featureProjection: 'EPSG::3857' })
+                format: new GeoJSON({
+                    dataProjection: 'EPSG::4326',
+                    featureProjection: 'EPSG::3857'
+                })
             }),
             // https://jsfiddle.net/8kan25Ld/9/
             style: function (feature) {
@@ -53,6 +59,9 @@ export default class PointsClusterController {
             }
         });
         this.isLoad = true;
+        this.useWebWorker = true;
+        this.superClusterWorker = new SuperClusterWorker();
+        this.superClusterWorker.addEventListener("message", this.onSuperClusterWorkerMessage.bind(this), this);
     }
 
     $onDestroy() {}
@@ -64,8 +73,8 @@ export default class PointsClusterController {
         }
     }
 
-    $onChanges(changes){
-        if(changes.points && this.isInitialized){
+    $onChanges(changes) {
+        if (changes.points && this.isInitialized) {
             this.isLoad = true;
             this.executeCluster();
         }
@@ -76,16 +85,24 @@ export default class PointsClusterController {
         this.map.on('moveend', this.executeCluster, this);
     }
 
-    executeCluster(){
-        let clusteredPoints = this.getClusterPoints();
-        if (clusteredPoints) {
-            this.layer.getSource().clear();
-            this.layer.getSource().addFeatures(clusteredPoints);
+    executeCluster() {
+        if (this.useWebWorker) {
+            this.getWorkerClusterPoints();
+        } else {
+            let clusteredPoints = this.getClusterPoints();
+            if (clusteredPoints) {
+                this.showClusterOnMap(clusteredPoints);
+            }
         }
     }
 
+    showClusterOnMap(clusteredPoints) {
+        this.layer.getSource().clear();
+        this.layer.getSource().addFeatures(clusteredPoints);
+    }
+
     getClusterPoints() {
-        if(this.isLoad){
+        if (this.isLoad) {
             this.isLoad = false;
             this.superClusterService = new SuperClusterService({
                 log: false,
@@ -98,7 +115,39 @@ export default class PointsClusterController {
         let bbox = proj.transformExtent(this.map.getView().calculateExtent(), 'EPSG:3857', 'EPSG:4326');
         let zoom = this.map.getView().getZoom();
         let clusterArray = this.superClusterService.getClustersArray(bbox, zoom);
-        return this.superClusterService.superclusterArrayToOlFeatures(clusterArray);
+        return SuperClusterService.superclusterArrayToOlFeatures(Feature, Point, proj, clusterArray);
+    }
+
+    getWorkerClusterPoints() {
+        let bbox = proj.transformExtent(this.map.getView().calculateExtent(), 'EPSG:3857', 'EPSG:4326');
+        let zoom = this.map.getView().getZoom();
+        if (this.isLoad) {
+            this.isLoad = false;
+            this.superClusterWorker.postMessage({
+                isLoad: true,
+                isCluster: true,
+                options: {
+                    log: false,
+                    radius: 40,
+                    extent: 256,
+                    maxZoom: 17
+                },
+                bbox: bbox,
+                zoom: zoom,
+                points: this.points.features
+            });
+        } else {
+            this.superClusterWorker.postMessage({
+                isLoad: false,
+                isCluster: true,
+                bbox: bbox,
+                zoom: zoom
+            });
+        }
+    }
+
+    onSuperClusterWorkerMessage(event) {
+        this.showClusterOnMap(SuperClusterService.superclusterArrayToOlFeatures(Feature, Point, proj, event.data.clusterArray));
     }
 
     getStyle(radius) {

@@ -31,6 +31,14 @@ module.exports = {
                 exclude: /node_modules/
             },
             {test: /\.json$/, loader: 'json-loader', exclude: /node_modules/},
+            {
+                test: /\.worker\.js$/,
+                loader: 'worker-loader',
+                options: { 
+                    name: '[name].[hash].js',
+                    inline: true 
+                }
+            },
 
             // inline base64 URLs for <=8k images, direct URLs for the rest
             {test: /\.(png|jpg|svg)$/, loader: 'url-loader?limit=8192'},
