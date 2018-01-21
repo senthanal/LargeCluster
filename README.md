@@ -1,6 +1,6 @@
 # Large Cluster #
 
-This is a prototype demonstration of clustering large number of points using supercluster library. See here, https://github.com/mapbox/supercluster.
+This is a prototype demonstration of clustering large number of points using supercluster library in the browser. See here, https://github.com/mapbox/supercluster.
 
 ## Getting Started ##
 
