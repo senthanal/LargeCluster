@@ -23,7 +23,6 @@ module.exports = {
     },
     module: {
         loaders: [
-            {loader: 'bundle?name=[name]', include: path.resolve('./node_modules/angular-i18n')},
             {test: /\.html$/, loader: 'raw-loader', exclude: /node_modules/},
             {
                 test: /\.js$/,
@@ -45,11 +44,19 @@ module.exports = {
 
             // helps to load bootstrap's css.
             // Ref: https://github.com/AngularClass/angular2-webpack-starter/issues/696
-            {test: /\.scss$/, loaders: ['style-loader', 'css-loader?sourceMap', 'sass-loader?sourceMap']},
-            {test: /\.css$/, loaders: ['style-loader', 'css-loader?sourceMap']},
-            {test: /\.(woff2?|ttf|eot)$/, loader: 'url-loader?limit=100000'},
-            {test: /bootstrap\/dist\/js\/umd\//, loader: 'imports-loader?jQuery=jquery'},
-            {test: /rzslider.js|rzslider.min.js/, loaders: ['imports-loader?define=>false']}
+            {test: /\.scss$/, loaders: ['style-loader', 'css-loader', 'sass-loader']},
+            {test: /\.css$/, loaders: ['style-loader', 'css-loader']},
+            {
+                test: /.(ttf|otf|eot|svg|woff|woff2?)(\?[a-z0-9]+)?$/,
+                use: [{
+                  loader: 'file-loader',
+                  options: {
+                    name: '[name].[ext]',
+                    outputPath: 'fonts/',    // where the fonts will go
+                    publicPath: '../fonts/'       // override the default path
+                  }
+                }]
+            }
         ]
     },
     plugins: [
@@ -58,7 +65,7 @@ module.exports = {
             minChunks: ({resource}) => /node_modules/.test(resource),
         }),
         new HtmlWebpackPlugin({
-            title: 'Balckmap',
+            title: 'LargeCluster',
             filename: 'index.html',
             template: 'app/index.html',
             inject: 'body', // all javascript resources will be placed at the bottom of the body element

@@ -17,7 +17,8 @@ import SuperClusterWorker from 'worker-loader!./SuperClusterWorker';
 
 let gj = new GeoJSON();
 export default class PointsClusterController {
-    constructor() {
+    constructor($timeout) {
+        "ngInject";
         this.isInitialized = false;
         let styleCache = {};
         this.layer = new LayerVector({
@@ -59,6 +60,7 @@ export default class PointsClusterController {
             }
         });
         this.isLoad = true;
+        this.$timeout = $timeout;
     }
 
     $onDestroy() {}
@@ -97,12 +99,13 @@ export default class PointsClusterController {
 
     resetWebWorker(){
         if(this.superClusterWorker){
-            this.superClusterWorker.removeEventListener("message", this.onSuperClusterWorkerMessage.bind(this), this);
-            this.superClusterWorker = null;
+            this.superClusterWorker.terminate();
         }
     }
 
     executeCluster() {
+        this.clusterReady = false;
+        this.layer.getSource().clear();
         if (this.useWebWorker) {
             this.getWorkerClusterPoints();
         } else {
@@ -114,8 +117,10 @@ export default class PointsClusterController {
     }
 
     showClusterOnMap(clusteredPoints) {
-        this.layer.getSource().clear();
         this.layer.getSource().addFeatures(clusteredPoints);
+        this.$timeout(()=>{
+            this.clusterReady = true;
+        }, 1);
     }
 
     getClusterPoints() {

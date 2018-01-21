@@ -9,6 +9,7 @@ pointLayer.component('pointsCluster', {
         map: '<',
         options: '<',
         points: '<',
+        clusterReady: '=',
         useWebWorker: '<'
     }
 });

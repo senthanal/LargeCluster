@@ -9,6 +9,7 @@ clusterSettings.component('clusterSettings', {
     bindings: {
         clusterPointsCount: '<',
         useWebWorker: '=',
+        clusterReady: '<',
         onClusterPointsCountChanged: '&'
     }
 });
