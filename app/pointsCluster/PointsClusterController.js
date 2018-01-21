@@ -12,9 +12,6 @@ import SourceVector from 'ol/source/vector';
 import GeoJSON from 'ol/format/GeoJSON';
 import SuperClusterService from './SuperClusterService';
 
-import clustersKmeans from '@turf/clusters-kmeans';
-import clustersDbscan from '@turf/clusters-dbscan';
-
 let gj = new GeoJSON();
 export default class PointsClusterController {
     constructor() {
@@ -55,12 +52,7 @@ export default class PointsClusterController {
                 return style;
             }
         });
-        this.superClusterService = new SuperClusterService({
-            log: false,
-            radius: 40,
-            extent: 256,
-            maxZoom: 17
-        });
+        this.isLoad = true;
     }
 
     $onDestroy() {}
@@ -74,7 +66,7 @@ export default class PointsClusterController {
 
     $onChanges(changes){
         if(changes.points && this.isInitialized){
-            this.superClusterService.loadPoints(this.points.features);
+            this.isLoad = true;
             this.executeCluster();
         }
     }
@@ -93,8 +85,16 @@ export default class PointsClusterController {
     }
 
     getClusterPoints() {
-        //return clustersDbscan(this.points, 1000);
-        //return clustersKmeans(this.points, {numberOfClusters: 7});
+        if(this.isLoad){
+            this.isLoad = false;
+            this.superClusterService = new SuperClusterService({
+                log: false,
+                radius: 40,
+                extent: 256,
+                maxZoom: 17
+            });
+            this.superClusterService.loadPoints(this.points.features);
+        }
         let bbox = proj.transformExtent(this.map.getView().calculateExtent(), 'EPSG:3857', 'EPSG:4326');
         let zoom = this.map.getView().getZoom();
         let clusterArray = this.superClusterService.getClustersArray(bbox, zoom);
