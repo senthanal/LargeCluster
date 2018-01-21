@@ -20,25 +20,6 @@ let gj = new GeoJSON();
 export default class PointsClusterController {
     constructor() {
         this.isInitialized = false;
-        this.layer = null;
-        this.clusterIndex = supercluster({
-            log: false,
-            radius: 40,
-            extent: 256,
-            maxZoom: 17
-        });
-    }
-
-    $onDestroy() {}
-    $onInit() {}
-    $doCheck() {
-        if (this.map && this.points && !this.isInitialized) {
-            this.isInitialized = true;
-            this.init();
-        }
-    }
-
-    init() {
         let styleCache = {};
         this.layer = new LayerVector({
             name: this.options.name,
@@ -75,9 +56,32 @@ export default class PointsClusterController {
                 return style;
             }
         });
+        this.clusterIndex = supercluster({
+            log: false,
+            radius: 40,
+            extent: 256,
+            maxZoom: 17
+        });
+    }
+
+    $onDestroy() {}
+    $onInit() {}
+    $doCheck() {
+        if (this.map && !this.isInitialized) {
+            this.isInitialized = true;
+            this.init();
+        }
+    }
+
+    $onChanges(changes){
+        if(changes.points && this.isInitialized){
+            this.clusterIndex.load(this.points.features);
+            this.executeCluster();
+        }
+    }
+
+    init() {
         this.map.addLayer(this.layer);
-        this.clusterIndex.load(this.points.features);
-        this.executeCluster();
         this.map.on('moveend', this.executeCluster, this);
     }
 

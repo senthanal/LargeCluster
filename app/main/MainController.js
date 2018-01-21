@@ -6,7 +6,7 @@ export default class MainController{
         this.map = null;
         this.isInitialized = false;
         this.points = null;
-        this.pointsCount = 1000000;
+        this.pointsCount = 10000;
         this.clusterOptions = {
             name: "Stores",
             shape: "circle",
@@ -18,11 +18,16 @@ export default class MainController{
     $doCheck(){
         if(this.map && !this.isInitialized){
             this.isInitialized = true;
-            this.init();
+            this.generatePoints();
         }
     }
 
-    init(){
+    generatePoints(){
         this.points = randomPoint(this.pointsCount, {bbox: proj.transformExtent(this.map.getView().calculateExtent(), 'EPSG:3857', 'EPSG:4326')});
+    }
+
+    onPointsCountChanged(pCount){
+        this.pointsCount = pCount;
+        this.generatePoints();
     }
 }

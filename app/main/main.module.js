@@ -7,6 +7,7 @@ import 'angular-toastr';
 import 'angular-loading-bar';
 import './../map/map.module';
 import './../pointsCluster/pointsCluster.module';
+import './../clusterSettings/clusterSettings.module';
 
 export default angular
     .module('main', [
@@ -22,7 +23,8 @@ export default angular
 
         // App Components
         'main.map',
-        'main.pointsCluster'
+        'main.pointsCluster',
+        'main.clusterSettings'
     ])
     .config(configure);
 

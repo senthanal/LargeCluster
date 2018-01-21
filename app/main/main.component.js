@@ -5,6 +5,7 @@ import main from './main.module';
 
 import './../map/map.component';
 import './../pointsCluster/pointsCluster.component';
+import './../clusterSettings/clusterSettings.component';
 
 main.component('main', {
     template: html,
