@@ -1,7 +1,7 @@
 {
   "name": "LargeCluster",
-  "version": "2.1.0",
-  "description": "LargeCluster",
+  "version": "2.2.0",
+  "description": "This is a prototype demonstration of clustering large number of points using supercluster library in the browser",
   "main": "app/index.js",
   "scripts": {
     "preinstall": "npm install npm-sort -g",
