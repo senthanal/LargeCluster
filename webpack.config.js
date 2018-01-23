@@ -7,6 +7,7 @@ const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 
+const gaId = require('./app/ga.json').gaId;
 module.exports = {
     entry: {
         app: __dirname + '/app/index.js'
@@ -65,10 +66,11 @@ module.exports = {
             minChunks: ({resource}) => /node_modules/.test(resource),
         }),
         new HtmlWebpackPlugin({
-            title: 'LargeCluster',
+            title: 'Large Cluster',
+            gaId: gaId,
             filename: 'index.html',
-            template: 'app/index.html',
-            inject: 'body', // all javascript resources will be placed at the bottom of the body element
+            template: 'app/index.ejs',
+            //inject: 'body', // all javascript resources will be placed at the bottom of the body element
             hash: true, // if true then append a unique webpack compilation hash to all included scripts and CSS files. This is useful for cache busting.
             minify: {
                 collapseWhitespace: true,

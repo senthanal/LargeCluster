@@ -1,6 +1,6 @@
 {
   "name": "LargeCluster",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "This is a prototype demonstration of clustering large number of points using supercluster library in the browser",
   "main": "app/index.js",
   "scripts": {

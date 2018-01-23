@@ -2,6 +2,17 @@
 <html ng-app="main" ng-strict-di>
 
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= htmlWebpackPlugin.options.gaId %>"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', '<%= htmlWebpackPlugin.options.gaId %>');
+    </script>
     <meta charset="utf-8">
     <!-- Set the character encoding for this document (if not set already), so that all characters within the UTF-8 space (such as emoji) are rendered correctly -->
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -60,7 +71,7 @@
     <!-- Country code (ISO 3166-1): mandatory, state code (ISO 3166-2): optional; eg. content="US" / content="US-NY" -->
     <meta name="geo.placename" content="Munich">
     <!-- eg. content="New York City" -->
-    <title>Large Cluster</title>
+    <title><%= htmlWebpackPlugin.options.title %></title>
 </head>
 
 <body>
