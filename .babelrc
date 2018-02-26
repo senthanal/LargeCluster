@@ -5,8 +5,10 @@
     "transform-es2015-arrow-functions",
     "check-es2015-constants"
   ],
+  "only": [
+    "node_modules/ol/**"
+  ],
   "presets": [
-    "es2015",
-    "stage-0"
+    "env"
   ]
 }
