@@ -6,8 +6,6 @@ const path = require('path');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
-
-const gaId = require('./app/ga.json').gaId;
 module.exports = {
     entry: {
         app: __dirname + '/app/index.js'
@@ -23,39 +21,55 @@ module.exports = {
         extensions: ['.js', '.json']
     },
     module: {
-        loaders: [
-            {test: /\.html$/, loader: 'raw-loader', exclude: /node_modules/},
+        loaders: [{
+                test: /\.html$/,
+                loader: 'raw-loader',
+                exclude: /node_modules/
+            },
             {
                 test: /\.js$/,
                 loaders: ['ng-annotate-loader', 'babel-loader?cacheDirectory'],
                 exclude: /node_modules/
             },
-            {test: /\.json$/, loader: 'json-loader', exclude: /node_modules/},
+            {
+                test: /\.json$/,
+                loader: 'json-loader',
+                exclude: /node_modules/
+            },
             {
                 test: /\.worker\.js$/,
                 loader: 'worker-loader',
-                options: { 
+                options: {
                     name: '[name].[hash].js',
-                    inline: true 
+                    inline: true
                 }
             },
 
             // inline base64 URLs for <=8k images, direct URLs for the rest
-            {test: /\.(png|jpg|svg)$/, loader: 'url-loader?limit=8192'},
+            {
+                test: /\.(png|jpg|svg)$/,
+                loader: 'url-loader?limit=8192'
+            },
 
             // helps to load bootstrap's css.
             // Ref: https://github.com/AngularClass/angular2-webpack-starter/issues/696
-            {test: /\.scss$/, loaders: ['style-loader', 'css-loader', 'sass-loader']},
-            {test: /\.css$/, loaders: ['style-loader', 'css-loader']},
+            {
+                test: /\.scss$/,
+                loaders: ['style-loader', 'css-loader', 'sass-loader']
+            },
+            {
+                test: /\.css$/,
+                loaders: ['style-loader', 'css-loader']
+            },
             {
                 test: /.(ttf|otf|eot|svg|woff|woff2?)(\?[a-z0-9]+)?$/,
                 use: [{
-                  loader: 'file-loader',
-                  options: {
-                    name: '[name].[ext]',
-                    outputPath: 'fonts/',    // where the fonts will go
-                    publicPath: '../fonts/'       // override the default path
-                  }
+                    loader: 'file-loader',
+                    options: {
+                        name: '[name].[ext]',
+                        outputPath: 'fonts/', // where the fonts will go
+                        publicPath: '../fonts/' // override the default path
+                    }
                 }]
             }
         ]
@@ -63,11 +77,12 @@ module.exports = {
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor',
-            minChunks: ({resource}) => /node_modules/.test(resource),
+            minChunks: ({
+                resource
+            }) => /node_modules/.test(resource),
         }),
         new HtmlWebpackPlugin({
             title: 'Large Cluster',
-            gaId: gaId,
             filename: 'index.html',
             template: 'app/index.ejs',
             //inject: 'body', // all javascript resources will be placed at the bottom of the body element
@@ -80,7 +95,7 @@ module.exports = {
                 removeStyleLinkTypeAttributes: true
             }
         }),
-        new FaviconsWebpackPlugin('./app/images/large-cluster.png'),
+        new FaviconsWebpackPlugin('./app/images/favicon.png'),
         new ngAnnotatePlugin({
             add: true
         }),

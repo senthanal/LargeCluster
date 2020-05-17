@@ -1,20 +1,17 @@
-import 'ol/ol.css';
-import './map.scss';
 import control from 'ol/control';
 import ScaleLine from 'ol/control/scaleline';
-import Style from 'ol/style/style';
-import Fill from 'ol/style/fill';
-import Stroke from 'ol/style/stroke';
-import Map from 'ol/map';
-import View from 'ol/view';
-import proj from 'ol/proj';
 import TileLayer from 'ol/layer/tile';
+import Map from 'ol/map';
+import 'ol/ol.css';
+import proj from 'ol/proj';
 import OSM from 'ol/source/osm';
+import View from 'ol/view';
+import './map.scss';
 
 export default class MapController {
     constructor() {}
 
-    $onDestroy(){
+    $onDestroy() {
         this.map.setTarget(null);
         this.map = null;
     }
@@ -43,6 +40,9 @@ export default class MapController {
         });
 
         this.attachWindowResize();
+        this.onMapReady({
+            map: this.map
+        });
     }
 
     attachWindowResize() {

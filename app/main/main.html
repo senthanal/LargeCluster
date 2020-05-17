@@ -1,16 +1,18 @@
 <div class="main">
-    <ol-map map="$ctrl.map"></ol-map>
+    <ol-map on-map-ready="$ctrl.onMapReady.call($ctrl, map)"></ol-map>
     <points-cluster 
         map="$ctrl.map" 
         use-web-worker="$ctrl.useWebWorker" 
         points="$ctrl.points" 
         options="$ctrl.clusterOptions"
         cluster-ready="$ctrl.clusterReady"
+        refresh-cluster="$ctrl.refreshCluster"
+        on-cluster-refreshed="$ctrl.onClusterRefreshed.call($ctrl)"
     ></points-cluster>
     <cluster-settings 
         cluster-points-count="$ctrl.pointsCount" 
         use-web-worker="$ctrl.useWebWorker"
         cluster-ready="$ctrl.clusterReady"
-        on-cluster-points-count-changed="$ctrl.onPointsCountChanged.bind($ctrl)"
+        on-cluster-points-count-changed="$ctrl.onPointsCountChanged.call($ctrl, pointsCount)"
     ></cluster-settings>
 </div>

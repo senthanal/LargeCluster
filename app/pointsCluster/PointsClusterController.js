@@ -1,24 +1,26 @@
-import _get from 'lodash/get';
-import _forEach from 'lodash/foreach';
 import Feature from 'ol/feature';
+import GeoJSON from 'ol/format/GeoJSON';
 import Point from 'ol/geom/point';
+import LayerVector from 'ol/layer/vector';
 import proj from 'ol/proj';
-import Style from 'ol/style/style';
+import SourceVector from 'ol/source/vector';
 import Circle from 'ol/style/circle';
-import RegularShape from 'ol/style/regularshape';
 import Fill from 'ol/style/fill';
 import Stroke from 'ol/style/stroke';
+import Style from 'ol/style/style';
 import Text from 'ol/style/text';
-import LayerVector from 'ol/layer/vector';
-import SourceVector from 'ol/source/vector';
-import GeoJSON from 'ol/format/GeoJSON';
-import SuperClusterService from './SuperClusterService';
 import SuperClusterWorker from 'worker-loader!./SuperClusterWorker';
+import SuperClusterService from './SuperClusterService';
 
 let gj = new GeoJSON();
 export default class PointsClusterController {
     constructor($timeout) {
         "ngInject";
+        this.$timeout = $timeout;
+    }
+
+    $onDestroy() {}
+    $onInit() {
         this.isInitialized = false;
         let styleCache = {};
         this.layer = new LayerVector({
@@ -30,7 +32,7 @@ export default class PointsClusterController {
                 })
             }),
             // https://jsfiddle.net/8kan25Ld/9/
-            style: function (feature) {
+            style: function(feature) {
                 var size = feature.get('point_count_abbreviated');
                 if (size == undefined) {
                     size = 1;
@@ -60,11 +62,7 @@ export default class PointsClusterController {
             }
         });
         this.isLoad = true;
-        this.$timeout = $timeout;
     }
-
-    $onDestroy() {}
-    $onInit() {}
     $doCheck() {
         if (this.map && !this.isInitialized) {
             this.isInitialized = true;
@@ -73,11 +71,10 @@ export default class PointsClusterController {
     }
 
     $onChanges(changes) {
-        if(changes.useWebWorker && this.isInitialized){
+        if (changes.useWebWorker && this.isInitialized) {
             if (this.useWebWorker) {
                 this.initWebWorker();
-            }
-            else{
+            } else {
                 this.resetWebWorker();
             }
         }
@@ -92,13 +89,13 @@ export default class PointsClusterController {
         this.map.on('moveend', this.executeCluster, this);
     }
 
-    initWebWorker(){
+    initWebWorker() {
         this.superClusterWorker = new SuperClusterWorker();
         this.superClusterWorker.addEventListener("message", this.onSuperClusterWorkerMessage.bind(this), this);
     }
 
-    resetWebWorker(){
-        if(this.superClusterWorker){
+    resetWebWorker() {
+        if (this.superClusterWorker) {
             this.superClusterWorker.terminate();
         }
     }
@@ -118,7 +115,7 @@ export default class PointsClusterController {
 
     showClusterOnMap(clusteredPoints) {
         this.layer.getSource().addFeatures(clusteredPoints);
-        this.$timeout(()=>{
+        this.$timeout(() => {
             this.clusterReady = true;
         }, 1);
     }

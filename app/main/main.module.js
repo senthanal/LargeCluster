@@ -1,13 +1,13 @@
+import '@uirouter/angularjs';
 import angular from 'angular';
 import 'angular-animate';
-import '@uirouter/angularjs';
-import 'angular-touch';
+import 'angular-loading-bar';
 import 'angular-sanitize';
 import 'angular-toastr';
-import 'angular-loading-bar';
+import 'angular-touch';
+import './../clusterSettings/clusterSettings.module';
 import './../map/map.module';
 import './../pointsCluster/pointsCluster.module';
-import './../clusterSettings/clusterSettings.module';
 
 export default angular
     .module('main', [
@@ -41,7 +41,7 @@ function configure($windowProvider, $locationProvider, $urlRouterProvider, $stat
     $urlRouterProvider
         .when('', '/main')
         .when('/', '/main')
-        .when('/main/', ['$state', function ($state) {
+        .when('/main/', ['$state', function($state) {
             $state.go("main");
         }]);
 
@@ -55,13 +55,12 @@ function configure($windowProvider, $locationProvider, $urlRouterProvider, $stat
     }];
 
     // Loop over the state definitions and register them
-    states.forEach(function (state) {
+    states.forEach(function(state) {
         $stateProvider.state(state);
     });
 
     // Angular performance option
     $compileProvider.debugInfoEnabled(false);
-    $compileProvider.preAssignBindingsEnabled(true);
 
     // configure how the application logs messages
     $logProvider.debugEnabled(false);

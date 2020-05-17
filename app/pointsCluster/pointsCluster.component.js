@@ -1,5 +1,5 @@
-import pointLayer from './pointsCluster.module';
 import html from './pointsCluster.html';
+import pointLayer from './pointsCluster.module';
 import PointsClusterController from './PointsClusterController';
 
 pointLayer.component('pointsCluster', {
@@ -10,6 +10,8 @@ pointLayer.component('pointsCluster', {
         options: '<',
         points: '<',
         clusterReady: '=',
-        useWebWorker: '<'
+        refreshCluster: '<',
+        useWebWorker: '<',
+        onClusterRefreshed: '&?'
     }
 });

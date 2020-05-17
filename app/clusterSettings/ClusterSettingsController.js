@@ -1,14 +1,9 @@
+export class ClusterSettingsController {
+    constructor() {}
 
-export default class ClusterSettingsController{
-    constructor(){
-
-    }
-
-    $onDestroy(){}
-    $onInit(){}
-    $doCheck(){}
-
-    onClusterPointsChange(){
-        this.onClusterPointsCountChanged()(this.clusterPointsCount);
+    onClusterPointsChange() {
+        this.onClusterPointsCountChanged({
+            pointsCount: this.clusterPointsCount
+        });
     }
 }

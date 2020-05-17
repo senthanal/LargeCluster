@@ -1,9 +1,17 @@
-import {randomPoint} from '@turf/random';
+import {
+    randomPoint
+} from '@turf/random';
 import proj from 'ol/proj';
 
-export default class MainController{
-    constructor(){
+export default class MainController {
+    constructor($interval) {
+        "ngInject";
+        this.$interval = $interval;
+    }
+
+    $onInit() {
         this.map = null;
+        this.refreshCluster = false;
         this.isInitialized = false;
         this.points = null;
         this.useWebWorker = false;
@@ -17,19 +25,28 @@ export default class MainController{
         };
     }
 
-    $doCheck(){
-        if(this.map && !this.isInitialized){
-            this.isInitialized = true;
-            this.generatePoints();
-        }
+    generatePoints() {
+        this.points = randomPoint(this.pointsCount, {
+            bbox: proj.transformExtent(this.map.getView().calculateExtent(), 'EPSG:3857', 'EPSG:4326')
+        });
+        this.$interval(() => {
+            this.refreshCluster = true;
+        }, 100, 1);
+
     }
 
-    generatePoints(){
-        this.points = randomPoint(this.pointsCount, {bbox: proj.transformExtent(this.map.getView().calculateExtent(), 'EPSG:3857', 'EPSG:4326')});
-    }
-
-    onPointsCountChanged(pCount){
-        this.pointsCount = pCount;
+    onMapReady(map) {
+        this.map = map;
+        this.isInitialized = true;
         this.generatePoints();
+    }
+
+    onPointsCountChanged(pointsCount) {
+        this.pointsCount = pointsCount;
+        this.generatePoints();
+    }
+
+    onClusterRefreshed() {
+        this.refreshCluster = false;
     }
 }
