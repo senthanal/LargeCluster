@@ -1,6 +1,6 @@
 const webpack = require('webpack');
+let webpackMerge = require('webpack-merge');
 const parentConf = require('./webpack.config');
-const merge = require('webpack-merge');
 const path = require('path');
 const fs = require('fs');
 
@@ -9,7 +9,9 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const {
     CleanWebpackPlugin
 } = require("clean-webpack-plugin");
-module.exports = merge(parentConf, {
+module.exports = webpackMerge(parentConf, {
+    mode: "production",
+    devtool: false,
     optimization: {
         minimizer: [new UglifyJsPlugin()],
     },
@@ -18,8 +20,10 @@ module.exports = merge(parentConf, {
             path.resolve('./node_modules')
         ]
     },
-    devtool: 'source-map',
     plugins: [
+        new webpack.DefinePlugin({
+            'PRODUCTION': JSON.stringify('production')
+        }),
         new CleanWebpackPlugin({
             cleanAfterEveryBuildPatterns: ['dist']
         }),

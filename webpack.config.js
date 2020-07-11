@@ -1,5 +1,3 @@
-const path = require('path');
-
 // plugins
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -99,10 +97,18 @@ module.exports = {
                     {
                         // This loader resolves url() and @imports inside CSS
                         loader: "css-loader",
+                        options: {
+                            importLoaders: 1
+                        }
                     },
                     {
                         // Then we apply postCSS fixes like autoprefixer and minifying
-                        loader: "postcss-loader"
+                        loader: "postcss-loader",
+                        options: {
+                            config: {
+                                path: __dirname + '/postcss.config.js'
+                            }
+                        }
                     },
                     {
                         // First we transform SASS to standard CSS
