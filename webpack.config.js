@@ -1,11 +1,12 @@
-let webpack = require('webpack');
-let _ = require('lodash');
 const path = require('path');
 
 // plugins
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const {
+    CleanWebpackPlugin
+} = require("clean-webpack-plugin");
 module.exports = {
     entry: {
         app: __dirname + '/app/index.js'
@@ -16,91 +17,141 @@ module.exports = {
         publicPath: ''
     },
     devtool: 'eval',
-    bail: false,
     resolve: {
-        extensions: ['.js', '.json']
+        extensions: ['.js', '.json', '.html'],
+        modules: ["node_modules"]
     },
     module: {
-        loaders: [{
+        rules: [{
                 test: /\.html$/,
-                loader: 'raw-loader',
+                use: 'raw-loader',
                 exclude: /node_modules/
             },
             {
-                test: /\.js$/,
-                loaders: ['ng-annotate-loader', 'babel-loader?cacheDirectory'],
-                exclude: /node_modules/
+                test: /\.m?js$/,
+                exclude: /(node_modules)/,
+                use: [{
+                    loader: 'ng-annotate-loader?ngAnnotate=ng-annotate-patched'
+                }, {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: [
+                            ['@babel/preset-env', {
+                                useBuiltIns: "usage",
+                                corejs: 3
+                            }]
+                        ],
+                        plugins: ['@babel/plugin-transform-runtime']
+                    }
+                }]
             },
             {
                 test: /\.json$/,
-                loader: 'json-loader',
+                use: 'json-loader',
                 exclude: /node_modules/
             },
             {
                 test: /\.worker\.js$/,
-                loader: 'worker-loader',
-                options: {
-                    name: '[name].[hash].js',
-                    inline: true
-                }
-            },
-
-            // inline base64 URLs for <=8k images, direct URLs for the rest
-            {
-                test: /\.(png|jpg|svg)$/,
-                loader: 'url-loader?limit=8192'
-            },
-
-            // helps to load bootstrap's css.
-            // Ref: https://github.com/AngularClass/angular2-webpack-starter/issues/696
-            {
-                test: /\.scss$/,
-                loaders: ['style-loader', 'css-loader', 'sass-loader']
-            },
-            {
-                test: /\.css$/,
-                loaders: ['style-loader', 'css-loader']
-            },
-            {
-                test: /.(ttf|otf|eot|svg|woff|woff2?)(\?[a-z0-9]+)?$/,
-                use: [{
-                    loader: 'file-loader',
+                use: {
+                    loader: 'worker-loader',
                     options: {
-                        name: '[name].[ext]',
-                        outputPath: 'fonts/', // where the fonts will go
-                        publicPath: '../fonts/' // override the default path
+                        name: '[name].[hash].js',
+                        inline: true
+                    }
+                },
+                exclude: /node_modules/
+            },
+            {
+                // Now we apply rule for images
+                test: /\.(png|jpe?g|gif|svg)$/,
+                use: [{
+                    // Using file-loader for these files
+                    loader: "file-loader",
+
+                    // In options we can set different things like format
+                    // and directory to save
+                    options: {
+                        outputPath: 'images'
                     }
                 }]
+            },
+            {
+                // Apply rule for fonts files
+                test: /\.(woff|woff2|ttf|otf|eot)$/,
+                use: [{
+                    // Using file-loader too
+                    loader: "file-loader",
+                    options: {
+                        outputPath: 'fonts'
+                    }
+                }]
+            },
+            {
+                // Apply rule for .sass, .scss or .css files
+                test: /\.(sa|sc|c)ss$/,
+
+                // Set loaders to transform files.
+                // Loaders are applying from right to left(!)
+                // The first loader will be applied after others
+                use: [{
+                        // After all CSS loaders we use plugin to do his work.
+                        // It gets all transformed CSS and extracts it into separate
+                        // single bundled file
+                        loader: MiniCssExtractPlugin.loader
+                    },
+                    {
+                        // This loader resolves url() and @imports inside CSS
+                        loader: "css-loader",
+                    },
+                    {
+                        // Then we apply postCSS fixes like autoprefixer and minifying
+                        loader: "postcss-loader"
+                    },
+                    {
+                        // First we transform SASS to standard CSS
+                        loader: "sass-loader",
+                        options: {
+                            implementation: require("sass")
+                        }
+                    }
+                ]
             }
         ]
     },
+    optimization: {
+        splitChunks: {
+            chunks: 'async',
+            minSize: 30000,
+            maxSize: 0,
+            minChunks: 1,
+            maxAsyncRequests: 6,
+            maxInitialRequests: 4,
+            automaticNameDelimiter: '~',
+            cacheGroups: {
+                defaultVendors: {
+                    test: /[\\/]node_modules[\\/]/,
+                    priority: -10
+                },
+                default: {
+                    minChunks: 2,
+                    priority: -20,
+                    reuseExistingChunk: true
+                }
+            }
+        }
+    },
     plugins: [
-        new webpack.optimize.CommonsChunkPlugin({
-            name: 'vendor',
-            minChunks: ({
-                resource
-            }) => /node_modules/.test(resource),
+        /*new CleanWebpackPlugin({
+            cleanAfterEveryBuildPatterns: ['dist']
+        }),*/
+        new MiniCssExtractPlugin({
+            filename: "bundle.css"
         }),
         new HtmlWebpackPlugin({
             title: 'Large Cluster',
-            filename: 'index.html',
-            template: 'app/index.ejs',
-            //inject: 'body', // all javascript resources will be placed at the bottom of the body element
-            hash: true, // if true then append a unique webpack compilation hash to all included scripts and CSS files. This is useful for cache busting.
-            minify: {
-                collapseWhitespace: true,
-                removeComments: true,
-                removeRedundantAttributes: true,
-                removeScriptTypeAttributes: true,
-                removeStyleLinkTypeAttributes: true
-            }
+            template: "./app/index.ejs",
+            filename: "index.html"
         }),
-        new FaviconsWebpackPlugin('./app/images/favicon.png'),
-        new ngAnnotatePlugin({
-            add: true
-        }),
-        new webpack.optimize.OccurrenceOrderPlugin(true),
-        new webpack.optimize.AggressiveMergingPlugin()
-    ],
-    externals: []
+        new FaviconsWebpackPlugin('./app/images/favicon.png')
+    ]
 };

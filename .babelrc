@@ -1,12 +1,14 @@
 {
-  "plugins": [
-    "transform-runtime",
-    "transform-es2015-destructuring",
-    "transform-es2015-arrow-functions",
-    "check-es2015-constants"
-  ],
-  "presets": [
-    "es2015",
-    "stage-0"
-  ]
+    "plugins": [
+        "@babel/plugin-transform-runtime"
+    ],
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "useBuiltIns": "usage",
+                "corejs": 3
+            }
+        ]
+    ]
 }
