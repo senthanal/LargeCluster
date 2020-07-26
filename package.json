@@ -5,9 +5,9 @@
     "main": "app/index.js",
     "husky": {
         "hooks": {
-          "pre-push": "npm run deploy"
+            "pre-push": "npm run deploy"
         }
-      },
+    },
     "scripts": {
         "preinstall": "npm install npm-sort -g",
         "postinstall": "npm-sort && npm rebuild node-sass",
