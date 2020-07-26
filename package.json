@@ -3,6 +3,11 @@
     "version": "2.3.0",
     "description": "This is a prototype demonstration of clustering large number of points using supercluster library in the browser",
     "main": "app/index.js",
+    "husky": {
+        "hooks": {
+            "pre-push": "npm run build && npm run deploy"
+        }
+    },
     "scripts": {
         "preinstall": "npm install npm-sort -g",
         "postinstall": "npm-sort && npm rebuild node-sass",
@@ -65,9 +70,10 @@
         "cssnano": "4.1.10",
         "favicons-webpack-plugin": "3.0.1",
         "file-loader": "6.0.0",
-        "gh-pages": "^3.1.0",
+        "gh-pages": "3.1.0",
         "html-webpack-plugin": "4.3.0",
         "http-proxy-middleware": "1.0.4",
+        "husky": "4.2.5",
         "jbuilder": "0.0.4",
         "jsonfile": "3.0.0",
         "lodash": "4.17.19",
