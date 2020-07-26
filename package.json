@@ -1,5 +1,5 @@
 {
-    "name": "LargeCluster",
+    "name": "@senthanal/largecluster",
     "version": "2.3.0",
     "description": "This is a prototype demonstration of clustering large number of points using supercluster library in the browser",
     "main": "app/index.js",
@@ -13,7 +13,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/senthanal/LargeCluster.git"
+        "url": "git://github.com/senthanal/LargeCluster.git"
     },
     "keywords": [
         "angular",
@@ -51,6 +51,7 @@
     "author": "Senthanal Sirpi Manohar",
     "license": "MIT",
     "homepage": "http://senthanal.at",
+    "publishConfig": { "registry": "https://npm.pkg.github.com/" },
     "devDependencies": {
         "@babel/core": "7.10.4",
         "@babel/plugin-transform-runtime": "7.10.4",
