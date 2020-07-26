@@ -51,7 +51,6 @@
     "author": "Senthanal Sirpi Manohar",
     "license": "MIT",
     "homepage": "http://senthanal.at",
-    "publishConfig": { "registry": "https://npm.pkg.github.com/" },
     "devDependencies": {
         "@babel/core": "7.10.4",
         "@babel/plugin-transform-runtime": "7.10.4",
