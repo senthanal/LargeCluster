@@ -2,3 +2,4 @@ dist/
 app/ga.js
 app/ga.json
 .vscode/
+/dist

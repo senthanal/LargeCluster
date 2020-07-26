@@ -9,7 +9,8 @@
         "dashboard": "webpack-dashboard -p 3001 -- webpack-dev-server --config=./webpack.dev.config.js --port=5000 --hot",
         "start": "webpack-dev-server --config=./webpack.dev.config.js --port=5000 --hot",
         "start:prod": "webpack-dev-server --config=./webpack.prod.config.js --port=5000 --hot",
-        "build": "webpack --config=./webpack.prod.config.js -p"
+        "build": "webpack --config=./webpack.prod.config.js -p",
+        "deploy": "gh-pages -d dist"
     },
     "repository": {
         "type": "git",
@@ -64,6 +65,7 @@
         "cssnano": "4.1.10",
         "favicons-webpack-plugin": "3.0.1",
         "file-loader": "6.0.0",
+        "gh-pages": "^3.1.0",
         "html-webpack-plugin": "4.3.0",
         "http-proxy-middleware": "1.0.4",
         "jbuilder": "0.0.4",
