@@ -76,7 +76,7 @@
         "husky": "4.2.5",
         "jbuilder": "0.0.4",
         "jsonfile": "3.0.0",
-        "lodash": "4.17.19",
+        "lodash": "4.17.21",
         "mini-css-extract-plugin": "0.9.0",
         "ng-annotate-loader": "0.7.0",
         "ng-annotate-patched": "1.12.0",
